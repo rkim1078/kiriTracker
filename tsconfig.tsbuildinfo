@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/main.tsx","./src/types.ts","./src/vite-env.d.ts","./src/components/ActivityLogger.tsx","./src/components/GoalBoard.tsx","./src/components/GridCell.tsx","./src/hooks/useGoalData.ts"],"errors":true,"version":"5.9.3"}
