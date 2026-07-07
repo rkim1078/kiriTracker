@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, type CSSProperties, type MouseEvent } from 'react'
 import type { CellData } from '../types'
-import { GRID_SIZE } from '../types'
+import { GRID_SIZE, getCanonicalFoundationId, getFoundationalRegionGrid, getRegionCenterId } from '../types'
 import { GridCell } from './GridCell'
 
 interface GoalBoardProps {
@@ -59,13 +59,15 @@ export function GoalBoard({
   )
 
   const expandedCells = expandedFoundation
-    ? Array.from({ length: 3 }, (_, i) => {
-        const r = expandedFoundation.row - 1 + i
-        return Array.from({ length: 3 }, (_, j) => {
-          const c = expandedFoundation.col - 1 + j
-          return cells[`${r}-${c}`]
-        })
-      })
+    ? getFoundationalRegionGrid(
+        expandedFoundation.row,
+        expandedFoundation.col,
+        cells,
+      )
+    : null
+
+  const regionCenterId = expandedFoundation
+    ? getRegionCenterId(expandedFoundation.row, expandedFoundation.col)
     : null
 
   return (
@@ -93,7 +95,7 @@ export function GoalBoard({
         <p className="app-subtitle">
           {editMode
             ? 'Click any square to edit its label'
-            : 'Click daily squares to log actions · Click foundations to focus'}
+            : 'Click daily squares to log actions · Click foundations to focus their region'}
         </p>
         <div className="harada-grid">
           {rows.map((rowCells, rowIdx) => (
@@ -148,13 +150,18 @@ export function GoalBoard({
                           <GridCell
                             cell={cell}
                             size="large"
-                            isExpandedCenter={cell.id === expandedFoundation.id}
+                            isExpandedCenter={cell.id === regionCenterId}
                             onDailyClick={onDailyClick}
                             onFoundationClick={(c) => {
-                              if (c.id === expandedFoundation.id) {
+                              const clicked = getCanonicalFoundationId(c.row, c.col)
+                              const expanded = expandedFoundation
+                                ? getCanonicalFoundationId(
+                                    expandedFoundation.row,
+                                    expandedFoundation.col,
+                                  )
+                                : null
+                              if (clicked && clicked === expanded) {
                                 onCloseExpanded()
-                              } else {
-                                onFoundationClick(c)
                               }
                             }}
                             onTextChange={onTextChange}
@@ -166,7 +173,7 @@ export function GoalBoard({
               ))}
             </div>
             <p className="foundational-hint">
-              Press Esc or click outside to close
+              Foundational region · Press Esc or click outside to close
             </p>
           </div>
         </div>

@@ -1,6 +1,23 @@
 export const GRID_SIZE = 9
 export const CENTER = 4
 
+/*
+Center refers to central goal at [4, 4]
+Foundational squares refer to the 8 squares surrounding the central goal
+  Each foundational square corresponds to one of the centers in the outer 8 3x3 regions
+  Outer center  | Canonical foundational square
+  [1,1]         | [3,3]
+  [1,4]         | [3,4]
+  [1,7]         | [3,5]
+  [4,1]         | [4,3]
+  [4,7]         | [4,5]
+  [7,1]         | [5,3]
+  [7,4]         | [5,4]
+  [7,7]         | [5,5]
+  Outer centers share the same content as their canonical foundational square
+Each outer center is surrounded by 8 daily actions
+*/
+
 export interface CellData {
   id: string
   row: number
@@ -21,16 +38,37 @@ export interface AppData {
   activities: ActivityEntry[]
 }
 
+const OUTER_CENTER_TO_CANONICAL: Record<string, string> = {
+  '1-1': '3-3',
+  '1-4': '3-4',
+  '1-7': '3-5',
+  '4-1': '4-3',
+  '4-7': '4-5',
+  '7-1': '5-3',
+  '7-4': '5-4',
+  '7-7': '5-5',
+}
+
+const OUTER_BLOCK_CENTERS = new Set(Object.keys(OUTER_CENTER_TO_CANONICAL))
+
 export function cellId(row: number, col: number): string {
   return `${row}-${col}`
 }
 
-export function isFoundation(row: number, col: number): boolean {
+export function isCenterRingFoundation(row: number, col: number): boolean {
   return (
     Math.abs(row - CENTER) <= 1 &&
     Math.abs(col - CENTER) <= 1 &&
     !(row === CENTER && col === CENTER)
   )
+}
+
+export function isOuterBlockCenter(row: number, col: number): boolean {
+  return OUTER_BLOCK_CENTERS.has(cellId(row, col))
+}
+
+export function isFoundation(row: number, col: number): boolean {
+  return isCenterRingFoundation(row, col) || isOuterBlockCenter(row, col)
 }
 
 export function getCellType(row: number, col: number): CellData['type'] {
@@ -39,13 +77,64 @@ export function getCellType(row: number, col: number): CellData['type'] {
   return 'daily'
 }
 
+export function getCanonicalFoundationId(row: number, col: number): string | null {
+  const id = cellId(row, col)
+  if (isCenterRingFoundation(row, col)) return id
+  if (isOuterBlockCenter(row, col)) return OUTER_CENTER_TO_CANONICAL[id]
+  return null
+}
+
+export function getBlockForFoundation(
+  foundationRow: number,
+  foundationCol: number,
+): { blockRow: number; blockCol: number } {
+  const canonicalId = getCanonicalFoundationId(foundationRow, foundationCol)
+  const [fr, fc] = canonicalId
+    ? canonicalId.split('-').map(Number)
+    : [foundationRow, foundationCol]
+  const blockRow = fr === CENTER ? 1 : fr < CENTER ? 0 : 2
+  const blockCol = fc === CENTER ? 1 : fc < CENTER ? 0 : 2
+  return { blockRow, blockCol }
+}
+
+export function getFoundationForBlock(
+  blockRow: number,
+  blockCol: number,
+): string {
+  const foundationRow = blockRow === 0 ? 3 : blockRow === 2 ? 5 : 4
+  const foundationCol = blockCol === 0 ? 3 : blockCol === 2 ? 5 : 4
+  return cellId(foundationRow, foundationCol)
+}
+
+export function getRegionCenterId(
+  foundationRow: number,
+  foundationCol: number,
+): string {
+  const { blockRow, blockCol } = getBlockForFoundation(foundationRow, foundationCol)
+  return cellId(blockRow * 3 + 1, blockCol * 3 + 1)
+}
+
+/** The 3×3 foundational region with its foundation at the physical block center. */
+export function getFoundationalRegionGrid(
+  foundationRow: number,
+  foundationCol: number,
+  cells: Record<string, CellData>,
+): (CellData | undefined)[][] {
+  const { blockRow, blockCol } = getBlockForFoundation(foundationRow, foundationCol)
+  const startRow = blockRow * 3
+  const startCol = blockCol * 3
+
+  return Array.from({ length: 3 }, (_, r) =>
+    Array.from({ length: 3 }, (_, c) => cells[cellId(startRow + r, startCol + c)]),
+  )
+}
+
 export function getFoundationBlock(foundationRow: number, foundationCol: number): string[] {
+  const { blockRow, blockCol } = getBlockForFoundation(foundationRow, foundationCol)
   const ids: string[] = []
-  for (let r = foundationRow - 1; r <= foundationRow + 1; r++) {
-    for (let c = foundationCol - 1; c <= foundationCol + 1; c++) {
-      if (r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE) {
-        ids.push(cellId(r, c))
-      }
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+      ids.push(cellId(blockRow * 3 + r, blockCol * 3 + c))
     }
   }
   return ids
@@ -83,26 +172,6 @@ export function getGreenLevel(count: number, max: number): string {
 
 export function createDefaultCells(): Record<string, CellData> {
   const cells: Record<string, CellData> = {}
-  const foundations: [number, number][] = []
-
-  for (let row = 0; row < GRID_SIZE; row++) {
-    for (let col = 0; col < GRID_SIZE; col++) {
-      if (isFoundation(row, col)) foundations.push([row, col])
-    }
-  }
-
-  function nearestFoundation(row: number, col: number): string {
-    let best = foundations[0]
-    let bestDist = Infinity
-    for (const [fr, fc] of foundations) {
-      const dist = Math.abs(row - fr) + Math.abs(col - fc)
-      if (dist < bestDist) {
-        bestDist = dist
-        best = [fr, fc]
-      }
-    }
-    return cellId(best[0], best[1])
-  }
 
   for (let row = 0; row < GRID_SIZE; row++) {
     for (let col = 0; col < GRID_SIZE; col++) {
@@ -112,13 +181,26 @@ export function createDefaultCells(): Record<string, CellData> {
       if (type === 'goal') text = 'Central Goal'
       else if (type === 'foundation') text = 'Foundation'
       else text = 'Daily action'
+
+      let foundationId: string | null = null
+      if (type === 'daily') {
+        const blockRow = Math.floor(row / 3)
+        const blockCol = Math.floor(col / 3)
+        foundationId =
+          blockRow === 1 && blockCol === 1
+            ? null
+            : getFoundationForBlock(blockRow, blockCol)
+      } else if (type === 'foundation') {
+        foundationId = getCanonicalFoundationId(row, col)
+      }
+
       cells[id] = {
         id,
         row,
         col,
         type,
         text,
-        foundationId: type === 'daily' ? nearestFoundation(row, col) : null,
+        foundationId,
       }
     }
   }

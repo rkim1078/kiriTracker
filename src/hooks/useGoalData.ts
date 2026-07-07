@@ -3,6 +3,7 @@ import {
   type AppData,
   type ActivityEntry,
   createDefaultData,
+  getCanonicalFoundationId,
 } from '../types'
 
 const STORAGE_KEY = 'kiri-tracker-data'
@@ -87,13 +88,27 @@ export function useGoalData() {
   const updateCellText = useCallback(
     async (id: string, text: string) => {
       if (!data || !data.cells[id]) return
-      const next: AppData = {
-        ...data,
-        cells: {
-          ...data.cells,
-          [id]: { ...data.cells[id], text },
-        },
+      const cell = data.cells[id]
+      const nextCells = { ...data.cells, [id]: { ...cell, text } }
+
+      const canonicalId =
+        cell.type === 'foundation'
+          ? getCanonicalFoundationId(cell.row, cell.col)
+          : null
+
+      if (canonicalId) {
+        for (const key of Object.keys(nextCells)) {
+          const c = nextCells[key]
+          if (
+            c.type === 'foundation' &&
+            getCanonicalFoundationId(c.row, c.col) === canonicalId
+          ) {
+            nextCells[key] = { ...c, text }
+          }
+        }
       }
+
+      const next: AppData = { ...data, cells: nextCells }
       await persist(next)
     },
     [data, persist],

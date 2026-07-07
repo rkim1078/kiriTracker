@@ -29,12 +29,38 @@ function cellId(row: number, col: number): string {
   return `${row}-${col}`
 }
 
-function isFoundation(row: number, col: number): boolean {
+function isCenterRingFoundation(row: number, col: number): boolean {
   return (
     Math.abs(row - CENTER) <= 1 &&
     Math.abs(col - CENTER) <= 1 &&
     !(row === CENTER && col === CENTER)
   )
+}
+
+const OUTER_CENTER_TO_CANONICAL: Record<string, string> = {
+  '1-1': '3-3',
+  '1-4': '3-4',
+  '1-7': '3-5',
+  '4-1': '4-3',
+  '4-7': '4-5',
+  '7-1': '5-3',
+  '7-4': '5-4',
+  '7-7': '5-5',
+}
+
+function isOuterBlockCenter(row: number, col: number): boolean {
+  return cellId(row, col) in OUTER_CENTER_TO_CANONICAL
+}
+
+function isFoundation(row: number, col: number): boolean {
+  return isCenterRingFoundation(row, col) || isOuterBlockCenter(row, col)
+}
+
+function getCanonicalFoundationId(row: number, col: number): string | null {
+  const id = cellId(row, col)
+  if (isCenterRingFoundation(row, col)) return id
+  if (isOuterBlockCenter(row, col)) return OUTER_CENTER_TO_CANONICAL[id]
+  return null
 }
 
 function getCellType(row: number, col: number): CellData['type'] {
@@ -43,23 +69,10 @@ function getCellType(row: number, col: number): CellData['type'] {
   return 'daily'
 }
 
-function nearestFoundation(row: number, col: number): string {
-  const foundations: [number, number][] = []
-  for (let r = 0; r < GRID_SIZE; r++) {
-    for (let c = 0; c < GRID_SIZE; c++) {
-      if (isFoundation(r, c)) foundations.push([r, c])
-    }
-  }
-  let best = foundations[0]
-  let bestDist = Infinity
-  for (const [fr, fc] of foundations) {
-    const dist = Math.abs(row - fr) + Math.abs(col - fc)
-    if (dist < bestDist) {
-      bestDist = dist
-      best = [fr, fc]
-    }
-  }
-  return cellId(best[0], best[1])
+function getFoundationForBlock(blockRow: number, blockCol: number): string {
+  const foundationRow = blockRow === 0 ? 3 : blockRow === 2 ? 5 : 4
+  const foundationCol = blockCol === 0 ? 3 : blockCol === 2 ? 5 : 4
+  return cellId(foundationRow, foundationCol)
 }
 
 function createDefaultCells(): Record<string, CellData> {
@@ -70,15 +83,28 @@ function createDefaultCells(): Record<string, CellData> {
       const type = getCellType(row, col)
       let text = ''
       if (type === 'goal') text = 'Central Goal'
-      else if (type === 'foundation') text = `Foundation ${row},${col}`
-      else text = `Daily action`
+      else if (type === 'foundation') text = 'Foundation'
+      else text = 'Daily action'
+
+      let foundationId: string | null = null
+      if (type === 'daily') {
+        const blockRow = Math.floor(row / 3)
+        const blockCol = Math.floor(col / 3)
+        foundationId =
+          blockRow === 1 && blockCol === 1
+            ? null
+            : getFoundationForBlock(blockRow, blockCol)
+      } else if (type === 'foundation') {
+        foundationId = getCanonicalFoundationId(row, col)
+      }
+
       cells[id] = {
         id,
         row,
         col,
         type,
         text,
-        foundationId: type === 'daily' ? nearestFoundation(row, col) : null,
+        foundationId,
       }
     }
   }

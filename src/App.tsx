@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import type { CellData } from './types'
+import { getCanonicalFoundationId } from './types'
 import { useGoalData } from './hooks/useGoalData'
 import { GoalBoard } from './components/GoalBoard'
 import { ActivityLogger } from './components/ActivityLogger'
@@ -27,9 +28,21 @@ function App() {
     [logActivity],
   )
 
-  const handleFoundationClick = useCallback((cell: CellData) => {
-    setExpandedFoundation((prev) => (prev?.id === cell.id ? null : cell))
-  }, [])
+  const handleFoundationClick = useCallback(
+    (cell: CellData) => {
+      if (!data) return
+      const canonicalId = getCanonicalFoundationId(cell.row, cell.col)
+      if (!canonicalId) return
+      const canonical = data.cells[canonicalId]
+      setExpandedFoundation((prev) => {
+        const prevCanonical = prev
+          ? getCanonicalFoundationId(prev.row, prev.col)
+          : null
+        return prevCanonical === canonicalId ? null : canonical
+      })
+    },
+    [data],
+  )
 
   const handleCloseExpanded = useCallback(() => {
     setExpandedFoundation(null)
