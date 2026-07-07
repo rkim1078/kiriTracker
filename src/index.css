@@ -33,6 +33,7 @@
   --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   --cell-size: clamp(52px, 7.5vw, 72px);
   --cell-gap: 5px;
+  --title-bar-height: 36px;
 }
 
 *,

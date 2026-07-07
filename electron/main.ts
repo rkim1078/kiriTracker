@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu } from 'electron'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -158,6 +158,8 @@ function saveData(data: AppData): void {
 let mainWindow: BrowserWindow | null = null
 let appData: AppData = createDefaultData()
 
+const TITLE_BAR_HEIGHT = 36
+
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1100,
@@ -166,6 +168,12 @@ function createWindow(): void {
     minHeight: 700,
     title: 'Kiri Tracker',
     backgroundColor: '#ebe0cc',
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#f7f0e3',
+      symbolColor: '#3a2c1e',
+      height: TITLE_BAR_HEIGHT,
+    },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -186,6 +194,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  Menu.setApplicationMenu(null)
   appData = loadData()
 
   ipcMain.handle('data:load', () => appData)

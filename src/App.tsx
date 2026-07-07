@@ -4,6 +4,7 @@ import { getCanonicalFoundationId } from './types'
 import { useGoalData } from './hooks/useGoalData'
 import { GoalBoard } from './components/GoalBoard'
 import { ActivityLogger } from './components/ActivityLogger'
+import { TitleBar } from './components/TitleBar'
 import './App.css'
 
 function App() {
@@ -50,15 +51,19 @@ function App() {
 
   if (loading || !data) {
     return (
-      <div className="app-loading">
-        <div className="loading-spinner" />
-        <p>Loading your goal board…</p>
+      <div className="app">
+        <TitleBar />
+        <div className="app-loading">
+          <div className="loading-spinner" />
+          <p>Loading your goal board…</p>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="app">
+      <TitleBar />
       <div className={`flash-indicator ${flashId ? 'flash-indicator--active' : ''}`} />
       <main className="app-scroll">
         <GoalBoard
