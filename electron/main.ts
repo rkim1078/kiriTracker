@@ -165,7 +165,7 @@ function createWindow(): void {
     minWidth: 800,
     minHeight: 700,
     title: 'Kiri Tracker',
-    backgroundColor: '#0d1117',
+    backgroundColor: '#ebe0cc',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, type CSSProperties, type MouseEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import type { CellData } from '../types'
 import { GRID_SIZE, getCanonicalFoundationId, getFoundationalRegionGrid, getRegionCenterId } from '../types'
+import { getRandomQuote } from '../data/quotes'
 import { GridCell } from './GridCell'
 
 interface GoalBoardProps {
@@ -26,6 +27,7 @@ export function GoalBoard({
 }: GoalBoardProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
   const originRectRef = useRef<DOMRect | null>(null)
+  const [quote] = useState(getRandomQuote)
 
   const handleFoundationClick = useCallback(
     (cell: CellData) => {
@@ -73,7 +75,10 @@ export function GoalBoard({
   return (
     <>
       <section className={`goal-board ${editMode ? 'goal-board--edit-mode' : ''}`}>
-        <h1 className="app-title">Harada Goal Board</h1>
+        <blockquote className="app-quote">
+          <p className="app-quote__text">{quote.text}</p>
+          <footer className="app-quote__author">— {quote.author}</footer>
+        </blockquote>
 
         <div className="mode-toggle" role="group" aria-label="Board mode">
           <button

@@ -42,7 +42,7 @@
   inset: 0;
   pointer-events: none;
   opacity: 0;
-  background: radial-gradient(circle at center, rgba(63, 185, 80, 0.12), transparent 70%);
+  background: radial-gradient(circle at center, rgba(168, 184, 122, 0.2), transparent 70%);
   transition: opacity 0.35s ease;
   z-index: 50;
 }
@@ -61,17 +61,40 @@
   min-height: min-content;
 }
 
-.app-title {
-  margin: 0 0 0.35rem;
-  font-size: 1.75rem;
+.app-quote {
+  margin: 0 0 1rem;
+  padding: 0 1rem;
+  max-width: 560px;
+  text-align: center;
+  border: none;
+}
+
+.app-quote__text {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.app-quote__author {
+  margin: 0.65rem 0 0;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .app-subtitle {
   margin: 0 0 2rem;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 1rem;
+  font-style: italic;
   text-align: center;
   max-width: 520px;
 }
@@ -106,8 +129,8 @@
 
 .mode-toggle__btn--active {
   background: var(--bg-elevated);
-  color: var(--text);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  color: var(--goal-border);
+  box-shadow: 0 1px 4px rgba(90, 60, 30, 0.15);
 }
 
 .goal-board--edit-mode .harada-grid {
@@ -132,7 +155,7 @@
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 28px rgba(90, 60, 30, 0.12);
 }
 
 .harada-row {
@@ -210,7 +233,9 @@
 }
 
 .cell-label {
-  font-size: clamp(0.55rem, 1.4vw, 0.72rem);
+  font-family: var(--font-body);
+  font-size: clamp(0.6rem, 1.4vw, 0.78rem);
+  font-weight: 600;
   line-height: 1.25;
   text-align: center;
   word-break: break-word;
@@ -219,7 +244,7 @@
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   color: var(--text);
-  opacity: 0.92;
+  opacity: 0.95;
 }
 
 .grid-cell--large .cell-label {
@@ -232,10 +257,11 @@
   height: 100%;
   resize: none;
   border: none;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(255, 248, 235, 0.75);
   color: var(--text);
   font-size: inherit;
-  font-family: inherit;
+  font-family: var(--font-body);
+  font-weight: 600;
   text-align: center;
   border-radius: calc(var(--radius) - 2px);
   padding: 4px;
@@ -289,7 +315,7 @@
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius-lg) + 4px);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 24px 48px rgba(90, 60, 30, 0.2);
 }
 
 .foundational-row {
@@ -324,8 +350,12 @@
 
 .activity-header h2 {
   margin: 0 0 0.25rem;
-  font-size: 1.15rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
   font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--goal-border);
 }
 
 .activity-header p {

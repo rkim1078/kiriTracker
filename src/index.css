@@ -1,29 +1,32 @@
 :root {
-  --bg: #0d1117;
-  --bg-elevated: #161b22;
-  --bg-overlay: rgba(1, 4, 9, 0.75);
-  --border: #30363d;
-  --text: #e6edf3;
-  --text-muted: #8b949e;
+  --font-display: 'Cinzel', 'Times New Roman', serif;
+  --font-body: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
 
-  --goal-bg: #1f3a5f;
-  --goal-border: #388bfd;
-  --goal-glow: rgba(56, 139, 253, 0.25);
+  --bg: #ebe0cc;
+  --bg-elevated: #f7f0e3;
+  --bg-overlay: rgba(58, 42, 28, 0.55);
+  --border: #c4a57a;
+  --text: #3a2c1e;
+  --text-muted: #7a6348;
 
-  --foundation-bg: #2d1f4e;
-  --foundation-border: #a371f7;
-  --foundation-glow: rgba(163, 113, 247, 0.25);
+  --goal-bg: #d4a96a;
+  --goal-border: #8b5a2b;
+  --goal-glow: rgba(139, 90, 43, 0.28);
 
-  --daily-bg: #1a2e1a;
-  --daily-border: #3fb950;
-  --daily-glow: rgba(63, 185, 80, 0.3);
-  --daily-logged: #238636;
+  --foundation-bg: #c9a882;
+  --foundation-border: #7a5230;
+  --foundation-glow: rgba(122, 82, 48, 0.22);
 
-  --activity-none: #21262d;
-  --activity-1: #0e4429;
-  --activity-2: #006d32;
-  --activity-3: #26a641;
-  --activity-4: #39d353;
+  --daily-bg: #e4d6be;
+  --daily-border: #a08058;
+  --daily-glow: rgba(122, 148, 72, 0.3);
+  --daily-logged: #a8b87a;
+
+  --activity-none: #ddd2bc;
+  --activity-1: #c8d4a8;
+  --activity-2: #a8bf78;
+  --activity-3: #86a356;
+  --activity-4: #688a3c;
 
   --radius: 8px;
   --radius-lg: 14px;
@@ -47,11 +50,9 @@ body,
 }
 
 body {
-  font-family:
-    'Segoe UI',
-    system-ui,
-    -apple-system,
-    sans-serif;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 500;
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
@@ -59,7 +60,11 @@ body {
 }
 
 button {
-  font: inherit;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
 }
 
 ::-webkit-scrollbar {
@@ -76,5 +81,5 @@ button {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #484f58;
+  background: #a08058;
 }
