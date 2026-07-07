@@ -5,6 +5,8 @@ import { GridCell } from './GridCell'
 
 interface GoalBoardProps {
   cells: Record<string, CellData>
+  editMode: boolean
+  onEditModeChange: (editMode: boolean) => void
   onDailyClick: (cell: CellData) => void
   onFoundationClick: (cell: CellData) => void
   onTextChange: (id: string, text: string) => void
@@ -14,6 +16,8 @@ interface GoalBoardProps {
 
 export function GoalBoard({
   cells,
+  editMode,
+  onEditModeChange,
   onDailyClick,
   onFoundationClick,
   onTextChange,
@@ -66,11 +70,30 @@ export function GoalBoard({
 
   return (
     <>
-      <section className="goal-board">
+      <section className={`goal-board ${editMode ? 'goal-board--edit-mode' : ''}`}>
         <h1 className="app-title">Harada Goal Board</h1>
+
+        <div className="mode-toggle" role="group" aria-label="Board mode">
+          <button
+            type="button"
+            className={`mode-toggle__btn ${!editMode ? 'mode-toggle__btn--active' : ''}`}
+            onClick={() => onEditModeChange(false)}
+          >
+            Track
+          </button>
+          <button
+            type="button"
+            className={`mode-toggle__btn ${editMode ? 'mode-toggle__btn--active' : ''}`}
+            onClick={() => onEditModeChange(true)}
+          >
+            Edit
+          </button>
+        </div>
+
         <p className="app-subtitle">
-          Click daily squares to log actions · Click foundations to focus ·
-          Double-click any cell to edit
+          {editMode
+            ? 'Click any square to edit its label'
+            : 'Click daily squares to log actions · Click foundations to focus'}
         </p>
         <div className="harada-grid">
           {rows.map((rowCells, rowIdx) => (
@@ -81,6 +104,7 @@ export function GoalBoard({
                     <GridCell
                       key={cell.id}
                       cell={cell}
+                      editMode={editMode}
                       onDailyClick={onDailyClick}
                       onFoundationClick={handleFoundationClick}
                       onTextChange={onTextChange}
@@ -93,7 +117,7 @@ export function GoalBoard({
         </div>
       </section>
 
-      {expandedFoundation && expandedCells && (
+      {!editMode && expandedFoundation && expandedCells && (
         <div
           ref={overlayRef}
           className="foundational-overlay"

@@ -10,7 +10,13 @@ function App() {
   const [expandedFoundation, setExpandedFoundation] = useState<CellData | null>(
     null,
   )
+  const [editMode, setEditMode] = useState(false)
   const [flashId, setFlashId] = useState<string | null>(null)
+
+  const handleEditModeChange = useCallback((next: boolean) => {
+    setEditMode(next)
+    if (next) setExpandedFoundation(null)
+  }, [])
 
   const handleDailyClick = useCallback(
     async (cell: CellData) => {
@@ -44,6 +50,8 @@ function App() {
       <main className="app-scroll">
         <GoalBoard
           cells={data.cells}
+          editMode={editMode}
+          onEditModeChange={handleEditModeChange}
           onDailyClick={handleDailyClick}
           onFoundationClick={handleFoundationClick}
           onTextChange={updateCellText}

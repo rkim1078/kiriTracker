@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { CellData } from '../types'
 
 interface GridCellProps {
   cell: CellData
   size?: 'normal' | 'large'
+  editMode?: boolean
   onDailyClick?: (cell: CellData) => void
   onFoundationClick?: (cell: CellData) => void
   onTextChange?: (id: string, text: string) => void
@@ -14,6 +15,7 @@ interface GridCellProps {
 export function GridCell({
   cell,
   size = 'normal',
+  editMode = false,
   onDailyClick,
   onFoundationClick,
   onTextChange,
@@ -29,6 +31,10 @@ export function GridCell({
   }, [cell.text])
 
   useEffect(() => {
+    if (!editMode) setEditing(false)
+  }, [editMode])
+
+  useEffect(() => {
     if (editing && inputRef.current) {
       inputRef.current.focus()
       inputRef.current.select()
@@ -37,20 +43,16 @@ export function GridCell({
 
   const handleClick = useCallback(() => {
     if (editing) return
+    if (editMode) {
+      setEditing(true)
+      return
+    }
     if (cell.type === 'daily') {
       onDailyClick?.(cell)
     } else if (cell.type === 'foundation') {
       onFoundationClick?.(cell)
     }
-  }, [cell, editing, onDailyClick, onFoundationClick])
-
-  const handleDoubleClick = useCallback(
-    (e: MouseEvent) => {
-      e.stopPropagation()
-      setEditing(true)
-    },
-    [],
-  )
+  }, [cell, editing, editMode, onDailyClick, onFoundationClick])
 
   const commitEdit = useCallback(() => {
     setEditing(false)
@@ -66,20 +68,21 @@ export function GridCell({
         ? 'cell--foundation'
         : 'cell--daily'
 
+  const title = editMode
+    ? 'Click to edit'
+    : cell.type === 'daily'
+      ? 'Click to log action'
+      : cell.type === 'foundation'
+        ? 'Click to expand'
+        : undefined
+
   return (
     <div
-      className={`grid-cell ${typeClass} grid-cell--${size} ${isExpandedCenter ? 'cell--expanded-center' : ''}`}
+      className={`grid-cell ${typeClass} grid-cell--${size} ${isExpandedCenter ? 'cell--expanded-center' : ''} ${editMode ? 'grid-cell--edit-mode' : ''}`}
       data-cell-id={cell.id}
       data-layout-id={layoutId}
       onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
-      title={
-        cell.type === 'daily'
-          ? 'Click to log · Double-click to edit'
-          : cell.type === 'foundation'
-            ? 'Click to expand · Double-click to edit'
-            : 'Double-click to edit'
-      }
+      title={title}
     >
       {editing ? (
         <textarea
