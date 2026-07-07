@@ -11,7 +11,7 @@ A Windows desktop application for tracking goals using the **Harada Method** —
 | Action | Result |
 |--------|--------|
 | Click daily square | Log a daily action (green flash feedback) |
-| Click foundation | Open expanded 3×3 foundational view |
+| Click foundation | Open that foundation's 3×3 foundational region in focus view |
 | Toggle **Edit** mode | Click any square to edit its label |
 | Toggle **Track** mode | Return to logging actions and foundational views |
 | Scroll down | View activity heatmap |
