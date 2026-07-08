@@ -9,12 +9,46 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: var(--title-bar-height);
   padding: 0 140px 0 14px;
   background: var(--bg-elevated);
   border-bottom: 1px solid var(--border);
   -webkit-app-region: drag;
   user-select: none;
+  transition:
+    background-color var(--theme-transition),
+    border-color var(--theme-transition),
+    color var(--theme-transition);
+}
+
+.title-bar__theme-btn {
+  -webkit-app-region: no-drag;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 4px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--bg);
+  color: var(--goal-border);
+  font-size: 0.95rem;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: pointer;
+  transition:
+    background-color var(--theme-transition),
+    border-color var(--theme-transition),
+    color var(--theme-transition);
+}
+
+.title-bar__theme-btn:hover {
+  background: var(--daily-bg);
+  color: var(--text);
 }
 
 .title-bar__title {
@@ -50,6 +84,8 @@
   border-top-color: var(--goal-border);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+  transition:
+    border-color var(--theme-transition);
 }
 
 @keyframes spin {
@@ -63,7 +99,7 @@
   inset: 0;
   pointer-events: none;
   opacity: 0;
-  background: radial-gradient(circle at center, rgba(168, 184, 122, 0.2), transparent 70%);
+  background: radial-gradient(circle at center, var(--flash-glow), transparent 70%);
   transition: opacity 0.35s ease;
   z-index: 50;
 }
@@ -128,6 +164,9 @@
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  transition:
+    background-color var(--theme-transition),
+    border-color var(--theme-transition);
 }
 
 .mode-toggle__btn {
@@ -140,8 +179,8 @@
   font-weight: 500;
   cursor: pointer;
   transition:
-    background-color var(--transition),
-    color var(--transition);
+    background-color var(--theme-transition),
+    color var(--theme-transition);
 }
 
 .mode-toggle__btn:hover {
@@ -151,7 +190,7 @@
 .mode-toggle__btn--active {
   background: var(--bg-elevated);
   color: var(--goal-border);
-  box-shadow: 0 1px 4px rgba(90, 60, 30, 0.15);
+  box-shadow: 0 1px 4px var(--shadow);
 }
 
 .goal-board--edit-mode .harada-grid {
@@ -176,7 +215,11 @@
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 28px rgba(90, 60, 30, 0.12);
+  box-shadow: 0 8px 28px var(--shadow);
+  transition:
+    background-color var(--theme-transition),
+    border-color var(--theme-transition),
+    box-shadow var(--theme-transition);
 }
 
 .harada-row {
@@ -202,7 +245,8 @@
     transform var(--transition),
     box-shadow var(--transition),
     border-color var(--transition),
-    background-color var(--transition);
+    background-color var(--theme-transition),
+    color var(--theme-transition);
   user-select: none;
 }
 
@@ -266,6 +310,7 @@
   -webkit-box-orient: vertical;
   color: var(--text);
   opacity: 0.95;
+  transition: color var(--theme-transition);
 }
 
 .grid-cell--large .cell-label {
@@ -278,7 +323,7 @@
   height: 100%;
   resize: none;
   border: none;
-  background: rgba(255, 248, 235, 0.75);
+  background: var(--input-bg);
   color: var(--text);
   font-size: inherit;
   font-family: var(--font-body);
@@ -287,6 +332,10 @@
   border-radius: calc(var(--radius) - 2px);
   padding: 4px;
   outline: 2px solid var(--goal-border);
+  transition:
+    background-color var(--theme-transition),
+    color var(--theme-transition),
+    outline-color var(--theme-transition);
 }
 
 /* ── Foundational view ── */
@@ -301,6 +350,7 @@
   background: var(--bg-overlay);
   backdrop-filter: blur(4px);
   animation: overlay-in 0.3s ease forwards;
+  transition: background-color var(--theme-transition);
 }
 
 @keyframes overlay-in {
@@ -336,7 +386,11 @@
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius-lg) + 4px);
-  box-shadow: 0 24px 48px rgba(90, 60, 30, 0.2);
+  box-shadow: 0 24px 48px var(--shadow-strong);
+  transition:
+    background-color var(--theme-transition),
+    border-color var(--theme-transition),
+    box-shadow var(--theme-transition);
 }
 
 .foundational-row {
@@ -390,6 +444,9 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 1.25rem;
+  transition:
+    background-color var(--theme-transition),
+    border-color var(--theme-transition);
 }
 
 .activity-months {
@@ -445,7 +502,8 @@
   border-radius: 2px;
   transition:
     transform 0.15s ease,
-    outline 0.15s ease;
+    outline 0.15s ease,
+    background-color var(--theme-transition);
   cursor: default;
   flex-shrink: 0;
 }

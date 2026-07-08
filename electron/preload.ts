@@ -27,6 +27,8 @@ const api = {
     ipcRenderer.invoke('activity:log', cellId),
   updateCell: (id: string, text: string): Promise<CellData> =>
     ipcRenderer.invoke('cell:update', id, text),
+  setTheme: (theme: 'light' | 'dark'): Promise<void> =>
+    ipcRenderer.invoke('theme:set', theme),
 }
 
 contextBridge.exposeInMainWorld('kiri', api)

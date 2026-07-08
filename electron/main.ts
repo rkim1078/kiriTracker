@@ -160,6 +160,31 @@ let appData: AppData = createDefaultData()
 
 const TITLE_BAR_HEIGHT = 36
 
+const THEME_WINDOW_COLORS = {
+  light: {
+    background: '#ebe0cc',
+    overlay: '#f7f0e3',
+    symbols: '#3a2c1e',
+  },
+  dark: {
+    background: '#1a1410',
+    overlay: '#241c16',
+    symbols: '#e8dcc8',
+  },
+} as const
+
+function applyWindowTheme(theme: 'light' | 'dark'): void {
+  const colors = THEME_WINDOW_COLORS[theme]
+  mainWindow?.setBackgroundColor(colors.background)
+  if (process.platform === 'win32') {
+    mainWindow?.setTitleBarOverlay({
+      color: colors.overlay,
+      symbolColor: colors.symbols,
+      height: TITLE_BAR_HEIGHT,
+    })
+  }
+}
+
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1100,
@@ -167,6 +192,7 @@ function createWindow(): void {
     minWidth: 800,
     minHeight: 700,
     title: 'Kiri Tracker',
+    icon: path.join(__dirname, '../build/icon.ico'),
     backgroundColor: '#ebe0cc',
     titleBarStyle: 'hidden',
     titleBarOverlay: {
@@ -222,6 +248,10 @@ app.whenReady().then(() => {
       saveData(appData)
     }
     return appData.cells[id]
+  })
+
+  ipcMain.handle('theme:set', (_event, theme: 'light' | 'dark') => {
+    applyWindowTheme(theme)
   })
 
   createWindow()
