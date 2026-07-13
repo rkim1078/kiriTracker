@@ -1,17 +1,46 @@
 # Kiri Tracker
 
-A Windows desktop application for tracking goals using the **Harada Method** — a 9×9 grid with a central goal, eight foundational objectives, and daily action squares.
+A Windows desktop application for tracking goals using the [Harada Method](https://news.harvard.edu/gazette/story/2026/02/crush-your-goals-the-ohtani-way/) — a 9×9 grid with a central goal, eight foundational objectives towards achieving that goal, and daily action squares that contribute to each foundational objective.
 
 ## Requirements
 
-- Node.js 20+ (for building)
-- Windows 10/11 (desktop app target)
+- [Node.js 20+](https://nodejs.org/en/download)
+- Windows 10/11
 
-## Usage
+## Quick Start
+
+```powershell
+# Clone
+git clone https://github.com/rkim1078/kiriTracker.git
+cd kiriTracker
+
+# Preview in development mode
+npm run electron:dev
+
+# Build desktop application
+npm run electron:build
+```
+
+Installers are written to `%TEMP%\kiri-tracker-release\`:
+
+| Output | Purpose |
+|--------|---------|
+| `Kiri Tracker Setup 1.0.0.exe` | Standard installer |
+| `KiriTracker-Portable-1.0.0.exe` | Single-file portable app (no install) |
+
+<details>
+<summary>Note on installer failures</summary>
+
+If the installer completes but shortcuts fail to launch, Windows Defender may have quarantined `KiriTracker.exe` during install. Add an exclusion for the install folder (`%LOCALAPPDATA%\Programs\KiriTracker`), uninstall and reinstall, or use the portable build.
+</details>
+
+## Features List
+
+### Usage
 
 | Action | Result |
 |--------|--------|
-| Click daily square | Log a daily action (green flash feedback) |
+| Click daily square | Log a daily action |
 | Click foundation | Open that foundation’s 3×3 region in focus view |
 | Toggle **Track** / **Edit** | Switch between logging actions and editing labels |
 | **Undo log** | Remove the most recently logged action |
@@ -19,7 +48,7 @@ A Windows desktop application for tracking goals using the **Harada Method** —
 | Moon / sun (title bar) | Toggle light / dark theme |
 | Scroll down | View activity heatmap (if enabled) |
 
-### Settings
+### Settings & Customization
 
 Open **Settings** from the gear icon in the title bar:
 
@@ -36,34 +65,10 @@ Open **Settings** from the gear icon in the title bar:
 | **Show inspirational quote** | Show or hide the quote above the board |
 | **Replay guide** | Run first-run onboarding again |
 
-### First-run guide
-
-On first launch, a short onboarding walkthrough explains the Harada board, Track vs Edit, simplified layout, and where to find settings. You can replay it anytime from Settings → **Replay guide**.
-
-### Modes at a glance
-
-- **Track** — Log daily actions; open foundations to focus (required on Simplified layout to reach dailies).
-- **Edit** — Click any square (including inside a foundation overlay) to rename it. Changes save automatically.
-
-## Build desktop app
-
-```powershell
-npm run electron:build
-```
-
-Installers are written to `%TEMP%\kiri-tracker-release\` (avoids OneDrive file locks in the project folder):
-
-| Output | Purpose |
-|--------|---------|
-| `Kiri Tracker Setup 1.0.0.exe` | Standard installer |
-| `KiriTracker-Portable-1.0.0.exe` | Single-file portable app (no install) |
-
-If the installer completes but shortcuts fail to launch, Windows Defender may have quarantined `KiriTracker.exe` during install. Add an exclusion for the install folder (`%LOCALAPPDATA%\Programs\KiriTracker`), uninstall, and reinstall—or use the portable build.
-
 ## Tech stack
 
-- Electron — native Windows desktop shell
-- React + TypeScript — UI
-- Vite — build tooling
+- Electron
+- React + TypeScript
+- Vite
 - JSON file persistence via Electron `userData` path
 - Preferences (theme accents, layout, density, etc.) stored in `localStorage`
