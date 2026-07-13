@@ -114,5 +114,15 @@ export function useGoalData() {
     [data, persist],
   )
 
-  return { data, loading, logActivity, updateCellText }
+  const undoLastActivity = useCallback(async () => {
+    if (!data || data.activities.length === 0) return false
+    const next: AppData = {
+      ...data,
+      activities: data.activities.slice(0, -1),
+    }
+    await persist(next)
+    return true
+  }, [data, persist])
+
+  return { data, loading, logActivity, updateCellText, undoLastActivity }
 }

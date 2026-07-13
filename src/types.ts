@@ -148,6 +148,66 @@ export function getActivitiesByDate(activities: ActivityEntry[]): Map<string, nu
   return map
 }
 
+export function getTodayDateString(): string {
+  return new Date().toISOString().slice(0, 10)
+}
+
+/** Distinct cell IDs logged on a given date. */
+export function getLoggedCellIdsForDate(
+  activities: ActivityEntry[],
+  date: string,
+): Set<string> {
+  const ids = new Set<string>()
+  for (const entry of activities) {
+    if (entry.date === date) ids.add(entry.cellId)
+  }
+  return ids
+}
+
+/**
+ * For each canonical foundation, fraction of its 8 daily cells logged today.
+ * Outer-block center ids share the same progress as their canonical foundation.
+ */
+export function getFoundationCompletionToday(
+  cells: Record<string, CellData>,
+  activities: ActivityEntry[],
+  date: string = getTodayDateString(),
+): Map<string, number> {
+  const logged = getLoggedCellIdsForDate(activities, date)
+  const progress = new Map<string, number>()
+
+  for (const cell of Object.values(cells)) {
+    if (!isCenterRingFoundation(cell.row, cell.col)) continue
+    const regionIds = getFoundationBlock(cell.row, cell.col)
+    const dailyIds = regionIds.filter((id) => cells[id]?.type === 'daily')
+    if (dailyIds.length === 0) {
+      progress.set(cell.id, 0)
+      continue
+    }
+    const done = dailyIds.filter((id) => logged.has(id)).length
+    progress.set(cell.id, done / dailyIds.length)
+  }
+
+  for (const [outerId, canonicalId] of Object.entries(OUTER_CENTER_TO_CANONICAL)) {
+    progress.set(outerId, progress.get(canonicalId) ?? 0)
+  }
+
+  return progress
+}
+
+/** Center ring: goal + 8 foundations (for simplified layout). */
+export function getSimplifiedGridCells(
+  cells: Record<string, CellData>,
+): (CellData | undefined)[][] {
+  return Array.from({ length: 3 }, (_, r) =>
+    Array.from({ length: 3 }, (_, c) => {
+      const row = CENTER - 1 + r
+      const col = CENTER - 1 + c
+      return cells[cellId(row, col)]
+    }),
+  )
+}
+
 export function generateDateRange(weeks: number): string[] {
   const dates: string[] = []
   const today = new Date()
