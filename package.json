@@ -7,22 +7,42 @@
     "dev": "vite",
     "build": "tsc --noEmit -p tsconfig.json && vite build && tsc -p tsconfig.electron.json",
     "electron:dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && tsc -p tsconfig.electron.json && electron .\"",
-    "electron:build": "npm run build && electron-builder",
+    "electron:build": "npm run build && electron-builder -c.directories.output=%TEMP%/kiri-tracker-release",
     "preview": "vite preview"
   },
   "build": {
     "appId": "com.kiri.tracker",
-    "productName": "Kiri Tracker",
+    "productName": "KiriTracker",
     "icon": "build/icon.ico",
     "directories": {
       "output": "release"
     },
     "files": [
       "dist/**/*",
-      "dist-electron/**/*"
+      "dist-electron/**/*",
+      "package.json"
     ],
     "win": {
-      "target": "nsis"
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "executableName": "KiriTracker",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Kiri Tracker",
+      "runAfterFinish": false,
+      "installerLanguages": [
+        "en_US"
+      ]
+    },
+    "portable": {
+      "artifactName": "KiriTracker-Portable-${version}.exe"
     }
   },
   "dependencies": {
